@@ -1,26 +1,27 @@
 import { useState } from "react"
+import { useNavigate } from 'react-router-dom'
 
 export default function LoginScreen() {
   const [id, setId] = useState("")
   const [password, setPassword] = useState("")
   const [autoLogin, setAutoLogin] = useState(true)
 
+  const navigate = useNavigate()
+
   const handleLogin = () => {
-    alert(`로그인 시도: ${id}`)
+    // alert(`로그인 시도: ${id}`)
+    navigate('/todo')
   }
 
   return (
     <div className="flex justify-center min-h-screen bg-gray-100">
       <div className = "w-[360px] bg-white px-6 pt-20 pb-10">
 
-        {/* <div className = "text-center mb-20">
-          <span className = " text-2xl font-bold text-gray-700">울산광역시</span>
-        </div> */}
+        <div className = "text-center mb-20">
+          <span className = " text-2xl font-bold text-gray-700">해야 할일 TODO</span>
+        </div>
         <div className = "flex justify-center">
-        <img
-         src = "/ulsan_icon.png"
-         className = "mt-2 mb-24"
-         />
+    
          </div>
 
         <div className = "flex flex-col gap-3">
