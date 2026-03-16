@@ -95,6 +95,11 @@ function TodoPage() {
             />
           ))}
         </ul>
+
+        <button 
+          onClick = { handleLogout }
+          className="bg-indigo-600 text-white mt-5 px-4 py-2 rounded-lg hover:bg-indigo-700"
+          >로그아웃</button>
       </div>
     </div>
   )
