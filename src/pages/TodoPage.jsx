@@ -1,5 +1,9 @@
 import { useState } from "react"
+import { useNavigate } from 'react-router-dom'
 import TodoItem from "../components/TodoItem"
+import supabase from '../supabaseClient'
+
+
 
 function TodoPage() {
   const [todos, setTodos] = useState([
@@ -15,18 +19,30 @@ function TodoPage() {
     return true
   })
 
+  //todo 추가
   const addTodo = () => {
     if (!input.trim()) return
     setTodos([...todos, { id: Date.now(), text: input, done: false }])
     setInput("")
   }
 
+  //todo 변환
   const toggleTodo = (id) => {
     setTodos(todos.map((t) => (t.id === id ? { ...t, done: !t.done } : t)))
   }
 
+  //todo 삭제
   const deleteTodo = (id) => {
     setTodos(todos.filter((t) => t.id !== id))
+  }
+
+  //네비게이션
+  const navigate = useNavigate()
+
+  //로그아웃
+  const handleLogout = async () => {
+    await supabase.auth.signOut()
+    navigate('/login')
   }
 
   return (

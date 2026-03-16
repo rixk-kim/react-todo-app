@@ -1,5 +1,6 @@
 import { useState } from "react"
 import { useNavigate } from 'react-router-dom'
+import supabase from '../supabaseClient'
 
 export default function LoginScreen() {
   const [id, setId] = useState("")
@@ -8,10 +9,22 @@ export default function LoginScreen() {
 
   const navigate = useNavigate()
 
-  const handleLogin = () => {
-    // alert(`로그인 시도: ${id}`)
-    navigate('/todo')
+  const handleSignUp = async () => {
+    const { error } = await supabase.auth.signUp({ email: id, password })
+    if (error) alert(error.message)
+      else alert('회원가입 완료')
   }
+
+  const handleLogin = async () => {
+    const { error } = await supabase.auth.signInWithPassword({ email: id, password })
+    if (error) alert(error.message)
+      else navigate('/todo')
+  }
+
+  // const handleLogin = () => {
+  //   // alert(`로그인 시도: ${id}`)
+  //   navigate('/todo')
+  // }
 
   return (
     <div className="flex justify-center min-h-screen bg-gray-100">
@@ -59,7 +72,8 @@ export default function LoginScreen() {
         </div>
 
         <div className = "text-center mt-10 text-sm text-gray-400">
-          <span>회원가입</span>
+          {/* 회원 가입  */}
+          <span onClick={ handleSignUp}>회원가입</span>
           <span className = "mx-2">|</span>
           <span>아이디 찾기</span>
           <span className = "mx-2">|</span>
