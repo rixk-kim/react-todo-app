@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import supabase from './supabaseClient'
 import LoginPage from './pages/LoginPage'
 import TodoPage from './pages/TodoPage'
+import CaloriePage from "./pages/CaloriePage";
 
 function App() {
 
@@ -27,6 +28,7 @@ function App() {
         <Route path="/" element = { <Navigate to = { session ? "/todo" : "/login"} />} />
         <Route path="/login" element = { <LoginPage/>} />
         <Route path="/todo" element = { session ? <TodoPage /> : <Navigate to="/login"/>} />
+        <Route path="/calorie" element = {<CaloriePage/> } />
       </Routes>
     </BrowserRouter>
   )

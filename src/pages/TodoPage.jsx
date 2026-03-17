@@ -4,10 +4,7 @@ import TodoItem from "../components/TodoItem";
 import supabase from "../supabaseClient";
 
 function TodoPage() {
-  const [todos, setTodos] = useState([
-    // { id: 1, text: "리액트 공부", done: false },
-    // { id: 2, text: "포트폴리오 만들기", done: false },
-  ]);
+  const [todos, setTodos] = useState([]);
   const [input, setInput] = useState("");
   const [filter, setFilter] = useState("all");
 
@@ -31,7 +28,7 @@ function TodoPage() {
 
   //todo 추가
   const addTodo = async (text) => {
-    if(!text.trim()) return
+    if (!text.trim()) return;
     const { data, error } = await supabase
       .from("todos")
       .insert([{ text, done: false }])
@@ -123,13 +120,22 @@ function TodoPage() {
           ))}
         </ul>
 
-        <button
-          type="button"
-          onClick={handleLogout}
-          className="bg-indigo-600 text-white mt-5 px-4 py-2 rounded-lg hover:bg-indigo-700"
-        >
-          로그아웃
-        </button>
+        <div className="flex justify-between">
+          <button
+            type="button"
+            onClick={handleLogout}
+            className="bg-indigo-600 text-white mt-5 px-4 py-2 rounded-lg hover:bg-indigo-700"
+          >
+            로그아웃
+          </button>
+          <button
+            type="button"
+            onClick={ () => navigate('/calorie') }
+            className="bg-indigo-600 text-white mt-5 px-4 py-2 rounded-lg hover:bg-indigo-700"
+          >
+            칼로리 체크
+          </button>
+        </div>
       </div>
     </div>
   );
