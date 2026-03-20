@@ -55,11 +55,15 @@ function TodoPage() {
 
   //요약 함수(gemini 2.5 flash lite 사용)
   const summarizeTodos = async () => {
-    const todoTexts = todos.map((t) => t.text)
-    const { data, error } = await supabase.functions.invoke("summarize-todos", {
-      body: { todos: todoTexts },
-    })
-    if (!error) setSummary(data.summary)
+    const { data: { session } } = await supabase.auth.getSession()
+  console.log("session:", session)
+  
+  const todoTexts = todos.map((t) => t.text)
+  const { data, error } = await supabase.functions.invoke("summarize-todos", {
+    body: { todos: todoTexts },
+  })
+  console.log("error:", error)
+  if (!error) setSummary(data.summary)
   }
 
 
@@ -148,7 +152,7 @@ function TodoPage() {
             칼로리 체크
           </button>
         </div>
-        <div className = "flex justify-betwwen">
+        <div className = "flex flex-col gap-2 mt-5">
           <button
             type = "button"
             onClick = { () => summarizeTodos()}
@@ -156,10 +160,11 @@ function TodoPage() {
           >
             할 일 요약
           </button>
-          <span
-            >
-            {`:${summary}`}
-          </span>
+          {summary && (
+            <div className = "bg-indigo-50 border border-indigo-200 rounded-lg p-4 text-sm text-gray-700">
+              {summary}
+              </div>
+          )}
         </div>
       </div>
     </div>
