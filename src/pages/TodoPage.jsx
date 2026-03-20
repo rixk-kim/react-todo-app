@@ -8,6 +8,7 @@ function TodoPage() {
   const [input, setInput] = useState("");
   const [filter, setFilter] = useState("all");
   const [summary, setSummary] = useState("");
+  const [priority, setpriority] = useState("")
 
   //todos 리스트 가져오기
   useEffect(() => {
@@ -16,7 +17,14 @@ function TodoPage() {
         .from("todos")
         .select("*")
         .order("created_at", { ascending: true });
-      if (!error) setTodos(data);
+      if (!error) {
+        setTodos(data);
+        //우선 순위 추천 gemini 2.5 flash lite 호출
+        const { data: aiData } = await supabase.functions.invoke("prioritize-todos", {
+          body: { todos: data.map((t) => t.text) },
+        })
+        if (aiData) setpriority(aiData.priority)
+      }
     };
     fetchTodos();
   }, []);
@@ -62,10 +70,19 @@ function TodoPage() {
   const { data, error } = await supabase.functions.invoke("summarize-todos", {
     body: { todos: todoTexts },
   })
+
   console.log("error:", error)
   if (!error) setSummary(data.summary)
   }
 
+  //자동 완성 함수 (gemini 2.5 flash lite 사용)
+  const autocompleteTodo = async () => {
+    if (!input.trim()) return
+    const { data } = await supabase.functions.invoke("autocomplete-todo", {
+      body: { input } ,
+    })
+    if (data) setInput(data.autocomplete)
+  }
 
   //네비게이션
   const navigate = useNavigate();
@@ -98,6 +115,12 @@ function TodoPage() {
             className="flex-1 border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-400"
           />
           <button
+            type = "button"
+            onClick = {() => autocompleteTodo()}
+            className = "bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700">
+            완성
+          </button>
+          <button
             type="button"
             onClick={() => addTodo(input)}
             className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700"
@@ -106,8 +129,15 @@ function TodoPage() {
           </button>
         </div>
 
+        {/* 우선 순위 추천 */}
+        {priority && (
+            <div className = "bg-indigo-50 border border-indigo-200 rounded-lg p-4 text-sm text-gray-700 whitespace-pre-wrap">
+              우선 순위 추천 : {priority}
+              </div>
+          )}
+
         {/* 필터 */}
-        <div className="flex gap-2 mb-4">
+        <div className="flex gap-2 my-4">
           {["all", "active", "done"].map((f) => (
             <button
               type="button"
@@ -152,16 +182,17 @@ function TodoPage() {
             칼로리 체크
           </button>
         </div>
-        <div className = "flex flex-col gap-2 mt-5">
+        
+        <div className = "flex flex-col gap-2 mt-1">
           <button
             type = "button"
             onClick = { () => summarizeTodos()}
-            className="bg-indigo-600 text-white mt-5 px-4 py-2 rounded-lg hover:bg-indigo-700"
+            className="bg-green-500 text-white mt-5 px-4 py-2 rounded-lg hover:bg-indigo-700"
           >
             할 일 요약
           </button>
           {summary && (
-            <div className = "bg-indigo-50 border border-indigo-200 rounded-lg p-4 text-sm text-gray-700">
+            <div className = "bg-indigo-50 border border-indigo-200 rounded-lg p-4 text-sm text-gray-700 whitespace-pre-wrap">
               {summary}
               </div>
           )}
