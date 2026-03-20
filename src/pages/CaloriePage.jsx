@@ -86,6 +86,14 @@ function CaloriePage() {
                 </li>
             ))}
           </ul>
+          <div  className = "flex items-center justify-center">
+            <button 
+              type="button"
+              onClick = {() => navigate('/todo')}
+            className="bg-green-600 text-white w-full py-2 rounded-lg hover:bg-green-700">
+              할 일 체크
+            </button>
+          </div>
         </div>
       </div>
     </div>

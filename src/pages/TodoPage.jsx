@@ -7,7 +7,9 @@ function TodoPage() {
   const [todos, setTodos] = useState([]);
   const [input, setInput] = useState("");
   const [filter, setFilter] = useState("all");
+  const [summary, setSummary] = useState("");
 
+  //todos 리스트 가져오기
   useEffect(() => {
     const fetchTodos = async () => {
       const { data, error } = await supabase
@@ -19,7 +21,7 @@ function TodoPage() {
     fetchTodos();
   }, []);
 
-  //필터
+  //todos 완료 체크
   const filteredTodos = todos.filter((t) => {
     if (filter === "active") return !t.done;
     if (filter === "done") return t.done;
@@ -50,6 +52,16 @@ function TodoPage() {
     await supabase.from("todos").delete().eq("id", id);
     setTodos(todos.filter((t) => t.id !== id));
   };
+
+  //요약 함수(gemini 2.5 flash lite 사용)
+  const summarizeTodos = async () => {
+    const todoTexts = todos.map((t) => t.text)
+    const { data, error } = await supabase.functions.invoke("summarize-todos", {
+      body: { todos: todoTexts },
+    })
+    if (!error) setSummary(data.summary)
+  }
+
 
   //네비게이션
   const navigate = useNavigate();
@@ -135,6 +147,19 @@ function TodoPage() {
           >
             칼로리 체크
           </button>
+        </div>
+        <div className = "flex justify-betwwen">
+          <button
+            type = "button"
+            onClick = { () => summarizeTodos()}
+            className="bg-indigo-600 text-white mt-5 px-4 py-2 rounded-lg hover:bg-indigo-700"
+          >
+            할 일 요약
+          </button>
+          <span
+            >
+            {`:${summary}`}
+          </span>
         </div>
       </div>
     </div>
